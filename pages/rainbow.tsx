@@ -21,12 +21,12 @@ const Rainbow : NextPage = () => {
       height : innerHeight
     }
     const camera = new THREE.PerspectiveCamera(
-      75,
+      45,
       sizes.width / sizes.height,
       0.001,
       1000
     )
-    // camera.position.y +=10
+    // camera.position.x +=1000
     const renderer = new THREE.WebGLRenderer({
       canvas : canvas
     })
@@ -73,13 +73,13 @@ const Rainbow : NextPage = () => {
     // ライト
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.7)
     scene.add(ambientLight)
-    const pointLight = new THREE.PointLight(0xffffff, 0.5)
-    pointLight.position.set(1, 2, 3)
+    const pointLight = new THREE.PointLight(0xffffff, 0.8)
+    pointLight.position.set(0, -1, 5)
     scene.add(pointLight)
 
     const render = () => {
-      camera.position.set(0, 0, 5) // カメラの位置を設定（例: z軸方向に5の位置）
-      camera.lookAt(0, 0, 0) // カメラが原点を向くように設定
+      camera.position.set(5, 0, 5) // カメラの位置を設定（例: z軸方向に5の位置）
+      camera.lookAt(0, 0, -5) // カメラが原点を向くように設定
 
       for (let i = 0; i < lineNum; i++) {
         const lineTop = lineArrTop[i]
