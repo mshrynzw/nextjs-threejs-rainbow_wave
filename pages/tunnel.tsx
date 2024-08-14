@@ -29,8 +29,9 @@ const Tunnel : NextPage = () => {
       0.1,
       150
     )
-    camera.position.y = 1
-    // camera.position.z = -5
+    // camera.position.y = 1
+    camera.position.z = -5
+    camera.lookAt(0,0,0)
     const renderer = new THREE.WebGLRenderer({
       canvas : canvas
     })
@@ -45,7 +46,7 @@ const Tunnel : NextPage = () => {
       color : "#2497f0"
     })
     const box = new THREE.Mesh(geometry, material)
-    box.position.z = -5
+    box.position.x+=2
     box.rotation.set(10, 10, 10)
     scene.add(box)
     gui.addColor(material, "color")
@@ -63,12 +64,13 @@ const Tunnel : NextPage = () => {
     ]
 
     let points : Vector3[] = []
-    for (let i = 0; i < pointsArray.length; i++) {
-      const x = pointsArray[i][0]
-      const y = Math.random() * 100
-      const z = pointsArray[i][1]
-      points.push(new THREE.Vector3(x, y, z))
-    }
+    // for (let i = 0; i < pointsArray.length; i++) {
+    //   const x = pointsArray[i][0]
+    //   const y = Math.random() * 100
+    //   const z = pointsArray[i][1]
+    //   points.push(new THREE.Vector3(x, y, z))
+    // }
+    points.push(new THREE.Vector3(0, 0, -3))
     const path = new THREE.CatmullRomCurve3(points)
     path.closed = true
 
@@ -79,13 +81,14 @@ const Tunnel : NextPage = () => {
 
     geometry = new THREE.BufferGeometry()
 
-    const color = new THREE.Color(0x000000)
+    const color = new THREE.Color("#2497f0")
 
     // Initialize noise
     // const noise = createNoise2D() // This should work if the import is correct
     // noise.seed(Math.random());
 
-    for (let i = 0; i < tubeDetail; i++) {
+    // for (let i = 0; i < tubeDetail; i++) {
+    for(let i=0; i<length;i++){
       // Get the normal values for each circle
       const normal = frames.normals[i]
       // Get the binormal values
@@ -99,36 +102,38 @@ const Tunnel : NextPage = () => {
       // Loop for the amount of particles we want along each circle
       const circle = new THREE.BufferGeometry()
       for (let j = 0; j < circlesDetail; j++) {
-        // Clone the position of the point in the center
+      //   // Clone the position of the point in the center
         const position = p.clone()
-        // Calculate the angle for each particle along the circle (from 0 to Pi*2)
+      //   // Calculate the angle for each particle along the circle (from 0 to Pi*2)
         let angle = (j / circlesDetail) * Math.PI * 2
         angle += Perlin.perlin2(index * 10, 0)
-        // Calculate the sine of the angle
+      //   // Calculate the sine of the angle
         const sin = Math.sin(angle)
-        // Calculate the cosine from the angle
+      //   // Calculate the cosine from the angle
         const cos = -Math.cos(angle)
 
-        // Calculate the normal of each point based on its angle
+      //   // Calculate the normal of each point based on its angle
         const normalPoint = new THREE.Vector3(0, 0, 0)
         normalPoint.x = (cos * normal.x + sin * binormal.x)
         normalPoint.y = (cos * normal.y + sin * binormal.y)
         normalPoint.z = (cos * normal.z + sin * binormal.z)
-        // Multiple the normal by the radius
+      //   // Multiple the normal by the radius
         normalPoint.multiplyScalar(radius)
 
-        // We add the normal values for each point
+      //   // We add the normal values for each point
         position.add(normalPoint)
-        // Update to use BufferAttribute instead of vertices
-        circle.setAttribute("position", new THREE.Float32BufferAttribute(position.toArray(), 3))
+      //   // Update to use BufferAttribute instead of vertices
+        circle.setAttribute("position", new THREE.Float32BufferAttribute([0,0,0,1,0,0], 3))
       }
       // Remove the line that pushes the first vertex again
       // circle.vertices.push(circle.vertices[0]);
       material = new THREE.LineBasicMaterial({
-        color : new THREE.Color("hsl(" + (Perlin.perlin2(index * 10, 0) * 60 + 300) + ",50%,50%)")
+        color : color
       })
 
       const line = new THREE.Line(circle, material)
+      // 位置を調整
+      line.position.set(p.x, p.y, p.z); // pはラインの中心点
       scene.add(line)
     }
 
@@ -136,28 +141,30 @@ const Tunnel : NextPage = () => {
     // ライト
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.7)
     scene.add(ambientLight)
-    const pointLight = new THREE.PointLight(0xffffff, 0.2)
-    pointLight.position.set(1, 2, 3)
+    const pointLight = new THREE.PointLight(0xebf2ff, 500,100)
+    // pointLight.position.set(1, 2, 3)
     scene.add(pointLight)
 
     // アニメーション
-    const clock = new THREE.Clock()
+    // const clock = new THREE.Clock()
     let percentage = 0
     const render = () => {
-      const elapsedTime = clock.getElapsedTime()
-      box.rotation.x = elapsedTime
-      box.rotation.y = elapsedTime
+      // const elapsedTime = clock.getElapsedTime()
+      // box.rotation.x = elapsedTime
+      // box.rotation.y = elapsedTime
 
-      const p1 = path.getPointAt(percentage % 1)
-      const p2 = path.getPointAt((percentage + 0.01) % 1)
-      camera.position.set(p1.x, p1.y, p1.z)
-      camera.lookAt(p2)
+      // percentage +=0.003
+      // const p1 = path.getPointAt(percentage % 1)
+      // const p2 = path.getPointAt((percentage + 0.01) % 1)
+      // camera.position.set(p1.x, p1.y, p1.z)
+      // camera.lookAt(p2)
+      // pointLight.position.set(p2.x,p2.y,p2.z)
 
       window.requestAnimationFrame(render)
       renderer.render(scene, camera)
     }
     render()
-
+    // console.log(camera.position)
     // ブラウザのリサイズ操作
     window.addEventListener("resize", () => {
       sizes.width = window.innerWidth
