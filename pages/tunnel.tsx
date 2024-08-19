@@ -3,7 +3,9 @@ import { useEffect, useRef } from "react"
 import * as THREE from "three"
 import * as dat from "lil-gui"
 import { Vector3 } from "three"
-import Perlin from "perlin.js"
+
+// tslint:disable-next-line:no-var-requires
+const Perlin = require("perlin.js")
 
 const Tunnel : NextPage = () => {
   const canvasRef = useRef<HTMLElement | null>(null)
